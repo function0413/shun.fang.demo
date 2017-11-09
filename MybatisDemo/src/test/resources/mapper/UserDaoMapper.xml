@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.user.dao.UserDao">
+	<resultMap type="com.user.domain.UsrDto" id="UsrDtoID">
+		<id property="USR_KEY" column="USR_KEY" />
+		<result property="ACT_KEY" column="ACT_KEY" />
+		<result property="USR_LAST_NAME" column="USR_LAST_NAME" />
+		<result property="USR_LOGIN" column="USR_LOGIN" />
+		<result property="ACT_NAME" column="ACT_NAME" />
+	</resultMap>
+	<!-- Map参数的取值 -->
+	<select id="testMapPram" parameterType="java.util.Map"
+		resultMap="UsrDtoID">
+		select * from usr where usr_key like #{usr_key}||'%' and act_key like
+		#{act_key}||'%' <!-- like的用法 -->
+	</select>
+	<!-- 列表参数的取值 -->
+	<select id="testListPram" parameterType="java.util.List"
+		resultMap="UsrDtoID">
+		select * from usr where usr_key in
+		<!-- foreach标签的使用 -->
+		<foreach collection="list" item="item" index="index" open="("
+			close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+	<!--数组参数的取值 -->
+	<select id="testArrayPram" resultMap="UsrDtoID">
+		select * from usr where usr_key in
+		<foreach collection="array" item="item" index="index" close=")"
+			open="(" separator=",">
+			#{item}
+		</foreach>
+	</select>
+	<!-- 同时传入多个参数 -->
+	<select id="testMultiPram" resultMap="UsrDtoID">
+		<!-- 默认情况下按顺序取出参数 -->
+		<!-- select * from usr where usr_last_name like #{0}||'%' or usr_login 
+			like #{1}||'%' -->
+		<!-- 使用注解指定参数的名称之后可以如下写 -->
+		select * from usr where usr_last_name like #{usr_last_name}||'%' or
+		usr_login like #{usr_login}||'%'
+	</select>
+
+	<!-- 同时传入多个集合参数 -->
+	<select id="testMultiCollectPram" resultMap="UsrDtoID">
+		select * from usr where usr_key in
+		<!-- 多个参数情况,List的使用方法,注意collection参数与单参数情况的区别 -->
+		<foreach collection="usr_keys" item="item" index="index" open="("
+			close=")" separator=",">
+			#{item}
+		</foreach>
+		<!-- 多个参数情况,Map的取值方法 -->
+		or usr_last_name like #{usr_info.usr_last_name}||'%' or usr_login like
+		#{usr_info.usr_login}||'%'
+	</select>
+	<!--测试if 和 trim 标签 -->
+	<select id="testIfAndTrim" resultMap="UsrDtoID">
+		select * from usr
+		<trim prefix="WHERE" prefixOverrides="AND |OR">
+			<!-- 多条件判断 -->
+			<if test="usr_key!=null and usr_key!=''">
+				usr_key like #{usr_key}||'%'
+			</if>
+			<if test="usr_login!=null and usr_login!='' ">
+				and usr_login like #{usr_login}||'%'
+			</if>
+		</trim>
+	</select>
+	<!-- 测试trim标签和where标签 -->
+	<update id="testWhereAndTrim">
+		update usr
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="usr_pager!=null and usr_pager!=''"> USR_PAGER=#{usr_pager},</if>
+			<if test="USR_HOME_POSTAL_ADDRESS!=null and USR_HOME_POSTAL_ADDRESS!=''"> USR_HOME_POSTAL_ADDRESS=#{USR_HOME_POSTAL_ADDRESS},</if>
+
+		</trim>
+		<where> usr_key=#{usr_key}</where>
+	</update>
+	<!-- 测试 choose标签-->
+	<select id="testChoose" resultMap="UsrDtoID">
+		select * from usr where 1=1
+		<choose>
+			<when test="map.usr_last_name!=null and map.usr_last_name!=''">
+				and usr_last_name like #{map.usr_last_name}||'%'
+			</when>
+			<when test="map.usr_login!=null and map.usr_login!=''">
+				and usr_login like #{map.usr_login}||'%'
+			</when>
+			<otherwise>
+				and usr_key ='2985'
+			</otherwise>
+		</choose>
+	</select>
+	<!-- 测试分页语句 -->
+	<select id="testPagination" resultMap="UsrDtoID">
+	select * from (select s.* ,rownum num from (select * from usr order by usr_key) s)u where num &gt; #{pageSize}*(#{pageNo}-1) and num &lt; = #{pageSize}*#{pageNo}
+	</select>
+</mapper>

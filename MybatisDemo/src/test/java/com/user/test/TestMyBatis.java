@@ -3,6 +3,7 @@ package com.user.test;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -46,9 +47,8 @@ public class TestMyBatis {
 				
 				Map map=new HashMap();
 				map.put("usr_key", "10");
-				map.put("act_key", "11");
+				//map.put("act_key", "11");
 				List<UsrDto> res = userDao.testMapPram(map);
-				System.out.println(res);
 	}
 	/***
 	 * 测试传入List参数
@@ -126,6 +126,16 @@ public class TestMyBatis {
 	@Test
 	public void testPagination() {
 		userDao.testPagination(10, 1);
+	}
+	/***
+	 * 测试返回Map
+	 */
+	@Test
+	public void testResMap() {
+		List<Map> res = userDao.testResMap();
+		for (Map map : res) {
+			System.out.println(map);
+		}
 	}
 
 }

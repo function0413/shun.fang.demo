@@ -18,5 +18,6 @@ public interface UserDao {
 	public void testWhereAndTrim(@Param("usr_key")String usr_key,@Param("usr_pager")String usr_pager,@Param("USR_HOME_POSTAL_ADDRESS")String USR_HOME_POSTAL_ADDRESS);
 	public List<UsrDto>  testChoose(@Param("map") Map map);
 	public List<UsrDto>  testPagination(@Param("pageSize")Integer pageSize,@Param("pageNo")Integer pageNo);
+	public List<Map>  testResMap();
 
 }

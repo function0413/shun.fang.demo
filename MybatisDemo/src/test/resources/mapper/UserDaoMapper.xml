@@ -9,10 +9,17 @@
 		<result property="ACT_NAME" column="ACT_NAME" />
 	</resultMap>
 	<!-- Map参数的取值 -->
+	<!-- select标签定义select语句 1.id ,按照id查找select 2.parameterType: 传递参数的类型，没有就不写 
+		3.resultType结果类型，此处指的是记录和实体对应的类型 -->
+	<!--参数类型可以写全称：java.lang.Integer 也可以简写，小写 如：int ,double ,string ,list ,map 
+		1个参数时，表达式中的名称可以随便写 -->
+	<!-- 若某个字段插入值时，插入的值有可能是null时，需指定类型， 使用jdbcType,否则MyBatis无法判断该null值是何类型，会报错,一般值有VARCHAR,BOOLEAN, 
+		INTEGER,DATE等等 -->
+	<!-- map 用key-value的形式来设定，简化操作，此时表达式的名字就是map中的key -->
 	<select id="testMapPram" parameterType="java.util.Map"
 		resultMap="UsrDtoID">
 		select * from usr where usr_key like #{usr_key}||'%' and act_key like
-		#{act_key}||'%' <!-- like的用法 -->
+		#{act_key ,jdbcType=VARCHAR}||'%' <!-- like的用法 -->
 	</select>
 	<!-- 列表参数的取值 -->
 	<select id="testListPram" parameterType="java.util.List"
@@ -77,7 +84,7 @@
 		</trim>
 		<where> usr_key=#{usr_key}</where>
 	</update>
-	<!-- 测试 choose标签-->
+	<!-- 测试 choose标签 -->
 	<select id="testChoose" resultMap="UsrDtoID">
 		select * from usr where 1=1
 		<choose>
@@ -94,6 +101,16 @@
 	</select>
 	<!-- 测试分页语句 -->
 	<select id="testPagination" resultMap="UsrDtoID">
-	select * from (select s.* ,rownum num from (select * from usr order by usr_key) s)u where num &gt; #{pageSize}*(#{pageNo}-1) and num &lt; = #{pageSize}*#{pageNo}
+		select * from (select s.*
+		,rownum num from (select * from usr order by
+		usr_key) s)u where num
+		&gt; #{pageSize}*(#{pageNo}-1) and num &lt; =
+		#{pageSize}*#{pageNo}
+	</select>
+	<!-- 测试返回Map -->
+	<!-- 返回类型为map,可以将结果封装到map中，获取值时，key为
+	  大写的字段名 -->
+	<select id="testResMap" resultType="map">
+		select * from usr where usr_key like '100%'
 	</select>
 </mapper>

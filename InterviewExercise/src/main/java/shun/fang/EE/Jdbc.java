@@ -20,7 +20,8 @@ public class Jdbc {
 
 	@Test
 	public void testOracle() throws ClassNotFoundException, SQLException {
-		// 注册驱动
+		
+		// 注册驱动,测试修改
 		Class.forName("oracle.jdbc.OracleDriver");
 		// 得到连接
 		Connection con = DriverManager.getConnection("jdbc:Oracle:thin:@localhost:1521:orcl", "scott", "m123");
